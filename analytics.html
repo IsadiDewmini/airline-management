@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartAir - Module 7: Analytics and Decision Support</title>
+  
+  <!-- External Stylesheet (analytics.css) -->
+  <link rel="stylesheet" href="analytics.css">
+  
+  <!-- Chart.js CDN for charts and graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Top Application Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">&#9992;</div>
+        <div class="brand-text">
+          <h1>SmartAir Management System</h1>
+          <p class="subtitle">Module 7: Analytics &amp; Decision Support</p>
+        </div>
+      </div>
+      <div class="system-status">
+        <span class="status-indicator"></span>
+        <span class="status-text">Module 7 Online</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="dashboard-container">
+
+    <!-- Demonstration Data Notice Banner -->
+    <section class="demo-banner">
+      <span class="banner-badge">DEMO DATA</span>
+      <p class="banner-text">
+        Notice: Displaying simulated airline operational and financial records for demonstration and academic evaluation.
+      </p>
+    </section>
+
+    <!-- Section 1: Dashboard Filters -->
+    <section class="card filter-card">
+      <div class="card-header">
+        <h2>Dashboard Filters</h2>
+        <span class="card-tip">Filter operational metrics by date range and report category</span>
+      </div>
+      <div class="filter-form">
+        <div class="filter-group">
+          <label for="startDate">Start Date</label>
+          <input type="date" id="startDate" name="startDate" value="2026-01-01">
+        </div>
+
+        <div class="filter-group">
+          <label for="endDate">End Date</label>
+          <input type="date" id="endDate" name="endDate" value="2026-06-30">
+        </div>
+
+        <div class="filter-group">
+          <label for="reportType">Report Type</label>
+          <select id="reportType" name="reportType">
+            <option value="ALL">All Categories</option>
+            <option value="Bookings">Bookings</option>
+            <option value="Revenue">Revenue</option>
+            <option value="Flight Operations">Flight Operations</option>
+          </select>
+        </div>
+
+        <div class="filter-buttons">
+          <button type="button" id="applyFiltersBtn" class="btn btn-primary">Apply Filters</button>
+          <button type="button" id="resetFiltersBtn" class="btn btn-secondary">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Summary Metric Cards -->
+    <section class="summary-cards-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Total Bookings</span>
+          <span class="stat-icon">&#128101;</span>
+        </div>
+        <div class="stat-value" id="totalBookingsVal">0</div>
+        <div class="stat-subtext">Passenger reservations</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Total Revenue</span>
+          <span class="stat-icon">&#128179;</span>
+        </div>
+        <div class="stat-value" id="totalRevenueVal">LKR 0</div>
+        <div class="stat-subtext">Sri Lankan Rupees (LKR)</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Total Flights</span>
+          <span class="stat-icon">&#9992;</span>
+        </div>
+        <div class="stat-value" id="totalFlightsVal">0</div>
+        <div class="stat-subtext">Scheduled flight operations</div>
+      </div>
+
+      <div class="stat-card stat-card-alert">
+        <div class="stat-header">
+          <span class="stat-title">Delayed Flights</span>
+          <span class="stat-icon">&#9200;</span>
+        </div>
+        <div class="stat-value" id="delayedFlightsVal">0</div>
+        <div class="stat-subtext">Flights delayed &gt; 15 mins</div>
+      </div>
+    </section>
+
+    <!-- Section 3: Charts and Graphs -->
+    <section class="charts-section">
+      <div class="charts-grid">
+        
+        <!-- Monthly Bookings Bar Chart -->
+        <div class="card chart-card">
+          <div class="card-header">
+            <h3>Monthly Bookings</h3>
+            <span class="badge">Bar Chart</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="monthlyBookingsChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Monthly Revenue Line Chart -->
+        <div class="card chart-card">
+          <div class="card-header">
+            <h3>Monthly Revenue (LKR)</h3>
+            <span class="badge">Line Chart</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="monthlyRevenueChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Flight Status Doughnut Chart -->
+        <div class="card chart-card">
+          <div class="card-header">
+            <h3>Flight Status Breakdown</h3>
+            <span class="badge">Doughnut Chart</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="flightStatusChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 4: Reports Table & CSV Export -->
+    <section class="card reports-card">
+      <div class="reports-header-row">
+        <div>
+          <h2>Operational &amp; Decision Support Reports</h2>
+          <p class="reports-caption" id="recordsSummaryText">Showing all records</p>
+        </div>
+        <div class="table-actions">
+          <button type="button" id="exportCsvBtn" class="btn btn-export">
+            <span class="btn-icon">&#128190;</span> Export as CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Responsive Table Container -->
+      <div class="table-container">
+        <table class="data-table" id="reportsTable">
+          <thead>
+            <tr>
+              <th>Record ID</th>
+              <th>Date</th>
+              <th>Flight No</th>
+              <th>Route</th>
+              <th>Report Type</th>
+              <th>Metric Description</th>
+              <th class="text-right">Value</th>
+              <th class="text-center">Status</th>
+            </tr>
+          </thead>
+          <tbody id="reportsTableBody">
+            <!-- Dynamically populated rows by analytics.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Page Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>&copy; 2026 SmartAir Airline Management System &bull; Module 7: Analytics &amp; Decision Support</p>
+      <p class="footer-note">Built with HTML5, CSS3, Vanilla JavaScript &amp; Chart.js (No CSS frameworks)</p>
+    </div>
+  </footer>
+
+  <!-- External JavaScript Application Logic (analytics.js) -->
+  <script src="analytics.js"></script>
+</body>
+</html>
